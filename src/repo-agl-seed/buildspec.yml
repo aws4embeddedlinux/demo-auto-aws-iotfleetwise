@@ -1,0 +1,61 @@
+version: 0.2
+run-as: codebuild-user
+env:
+  git-credential-helper: yes
+  shell: bash
+phases:
+  install:
+    run-as: root
+    commands:
+      - apt update
+      - apt install -y gawk wget language-pack-en git diffstat mtools dosfstools unzip texinfo parted gcc build-essential chrpath socat cpio python3 python3-pip python3-pexpect xz-utils debianutils iputils-ping python3-git python3-jinja2 libegl1-mesa libsdl1.2-dev pylint3 xterm python3-subunit mesa-common-dev zstd liblz4-tool
+      - mkhomedir_helper codebuild-user 
+      - update-alternatives --remove python /usr/bin/python2
+      - update-alternatives --install /usr/bin/python python /usr/bin/python3.8 1
+      - update-alternatives  --set python /usr/bin/python3.8
+  pre_build:
+    commands:
+      - export HOME=/home/codebuild-user
+      - source $HOME/.bashrc
+      - echo $PATH
+      - git config --global user.name "Cloudy Builder"
+      - git config --global user.email "email@example.com"   
+      - REPO_DIR=$(pwd)
+      - export AGL_TOP=$HOME/AGL
+      - echo 'export AGL_TOP=$HOME/AGL' >> $HOME/.bashrc
+      - mkdir -p $AGL_TOP
+      - mkdir -p $HOME/bin
+      - export PATH=$HOME/bin:$PATH
+      - echo 'export PATH=$HOME/bin:$PATH' >> $HOME/.bashrc
+      - curl https://storage.googleapis.com/git-repo-downloads/repo > $HOME/bin/repo
+      - chmod a+x $HOME/bin/repo
+      - cd $AGL_TOP
+      - mkdir marlin
+      - cd marlin
+      - repo init -b marlin -m marlin_13.0.1.xml -u https://gerrit.automotivelinux.org/gerrit/AGL/AGL-repo
+      - repo sync
+      - cd $AGL_TOP/marlin
+      - git clone -b dunfell https://github.com/aws/meta-aws
+      - echo n | source meta-agl/scripts/aglsetup.sh -m s32g274ardb2 agl-basesystem
+      - source build/agl-init-build-env 
+      - bitbake-layers add-layer $AGL_TOP/marlin/external/meta-openembedded/meta-python
+      - bitbake-layers add-layer $AGL_TOP/marlin/external/meta-openembedded/meta-networking
+      - bitbake-layers add-layer $AGL_TOP/marlin/meta-aws
+      - echo "ggc_group::10000:" >> $AGL_TOP/marlin/meta-agl/meta-agl-core/files/group
+      - echo "ggc_user::10000:10000:::" >> $AGL_TOP/marlin/meta-agl/meta-agl-core/files/passwd
+      - cd $REPO_DIR
+      - chmod +x ./gg-env-setup.sh
+      - THING_NAME=agl-demo THING_GROUP_NAME=ew22 AWS_DEFAULT_REGION=eu-central-1 ./gg-env-setup.sh
+      - cat ./local.conf >> $AGL_TOP/marlin/build/conf/local.conf
+      - cp ./certs/* $AGL_TOP/marlin/meta-aws/recipes-iot/aws-iot-greengrass/files/
+  build:
+    commands:
+      - export BUILDDIR=$AGL_TOP/marlin/build
+      - source $BUILDDIR/agl-init-build-env
+      - bitbake core-image-minimal
+cache:
+  paths:
+    - '$BUILDDIR/sstate-cache/**/*'
+artifacts:
+  s3-prefix: images
+  files: $BUILDDIR/tmp/deploy/images/s32g274ardb2/*

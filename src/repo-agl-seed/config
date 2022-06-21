@@ -1,0 +1,45 @@
+
+if [ -z "$THING_NAME" ]; then
+  echo "THING_NAME is required"
+  exit 0
+fi
+if [ -z "$THING_GROUP_NAME" ]; then
+  echo "THING_GROUP_NAME is required"
+  exit 0
+fi
+
+if [ -z "$AWS_DEFAULT_REGION" ]; then
+  echo "AWS_DEFAULT_REGION is required"
+  exit 0
+fi
+
+RUN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+
+ACCOUNT_ID=$(aws --output text sts get-caller-identity --query 'Account')
+
+THING_POLICY_NAME=GreengrassV2IoTThingPolicy
+GREENGRASS_TES_ROLE_ALIAS_POLICY_NAME=GreengrassTESCertificatePolicyGreengrassV2TokenExchangeRoleAlias
+GREENGRASS_TES_ROLE_ALIAS=GreengrassV2TokenExchangeRoleAlias
+CERTS_DIR=${RUN_DIR}/certs
+ROOT_CERT_PATH=${CERTS_DIR}/demo.root.pem
+DEVICE_CERT_PATH=${CERTS_DIR}/demo.cert.pem
+PUBLIC_KEY_PATH=${CERTS_DIR}/demo.pubkey.pem
+PRIVATE_KEY_PATH=${CERTS_DIR}/demo.pkey.pem
+
+
+LOCAL_CONF="
+ACCEPT_FSL_EULA = \"1\"
+
+GGV2_DATA_EP     = \"$(aws --output text iot describe-endpoint \
+                     --endpoint-type iot:Data-ATS \
+                     --query 'endpointAddress')\"
+GGV2_CRED_EP     = \"$(aws --output text iot describe-endpoint \
+                     --endpoint-type iot:CredentialProvider \
+                     --query 'endpointAddress')\"
+GGV2_REGION      = \"${AWS_DEFAULT_REGION}\"
+GGV2_THING_NAME  = \"${THING_NAME}\"
+GGV2_TES_RALIAS  = \"${GREENGRASS_TES_ROLE_ALIAS} \"
+
+IMAGE_INSTALL_append = \" greengrass-bin-demo canutils \"
+
+"
