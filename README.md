@@ -19,7 +19,7 @@ Data from the vehicles can be collected using [Campaigns](https://docs.aws.amazo
 
 ## Getting started 
 Clone this repository and issue the following commands to bootstrap cdk in your default aws profile account/region. 
-> :warning: **At the time of writing, AWS Iot FleetWise is only available in preview only in us-west-1 and eu-central-1 so be sure to use one of the mentioned region to run the demo on**
+> :warning: **At the time of writing, AWS Iot FleetWise is only available in preview only in us-east-1 and eu-central-1 so be sure to use one of the mentioned region to run the demo on**
 
 If CDK cli is not installed please do the following
 
