@@ -17,6 +17,8 @@ Data is collected by AWS Iot FleetWise and stored in [Amazon Timestream](https:/
 
 Data from the vehicles can be collected using [Campaigns](https://docs.aws.amazon.com/iot-fleetwise/latest/developerguide/campaigns.html). In this demo, we collect data on a regular time basis as well as in response to certain events such is in case of a crash.
 
+This repository includes all the code, written using CDK in Python, to reproduce the demo in your AWS account and leverage the [CDK Iot Fleetwise L2 Construct library](https://github.com/aws-samples/cdk-aws-iotfleetwise).
+
 ## Getting started 
 Clone this repository and issue the following commands to bootstrap cdk in your default aws profile account/region. 
 > :warning: **At the time of writing, AWS Iot FleetWise is only available in preview only in us-east-1 and eu-central-1 so be sure to use one of the mentioned region to run the demo on**
@@ -34,7 +36,7 @@ npx cdk bootstrap --cloudformation-execution-policies \
 Create a virtualenv on MacOS and Linux:
 
 ```sh
-cd demo-aws-iotfleetwise
+cd demo-auto-aws-iotfleetwise
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
@@ -47,6 +49,13 @@ cdk deploy demo-auto-aws-iotfleetwise -c key_name=mykey
 ```
 
 The deployments takes about 20 min. Once deployment is completed, you will see the URL where to connect to the grafana dashboard and the command on how to retrive the `admin` user password from [AWS Secrets Manager](https://aws.amazon.com/secrets-manager/).
+
+## Clean up
+> :warning: Deploying this demo in your AWS account will create and consume AWS resources, which will cost money. Therefore, to avoid ongoing charges, be sure to follow the instructions below to delete all the resource.
+
+```sh
+cdk destroy demo-auto-aws-iotfleetwise -c key_name=mykey
+```
 
 ## Security
 
