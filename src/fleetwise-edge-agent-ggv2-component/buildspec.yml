@@ -1,0 +1,31 @@
+# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+# Licensed under the Amazon Software License  http://aws.amazon.com/asl/
+version: 0.2
+
+env:
+  privileged-mode: true
+  git-credential-helper: yes
+
+phases:
+  install:
+    commands:
+      - echo Entered the install phase...
+      - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
+      - apt update && apt install -y git htop jq unzip
+      - git submodule update --init --recursive
+      - ./tools/install-deps-cross.sh
+    finally:
+      - echo Exiting the install phase.
+  build:
+    commands:
+      - echo Entered the build phase...
+      - echo $S3_PATH
+      - echo Build started on `date`
+      - mkdir build && cd build
+      - cmake -DFWE_STATIC_LINK=On -DCMAKE_TOOLCHAIN_FILE=/usr/local/aarch64-linux-gnu/lib/cmake/arm64-toolchain.cmake ..
+      - make -j`nproc`
+      - cp ./lib/aws-iot-fleetwise-edge/src/executionmanagement/aws-iot-fleetwise-edge ./tools/ggv2-component/artifacts
+      - python3 ./tools/ggv2-component/build_component_version.py -d ./tools/ggv2-component -c "com.amazon.aws.IoTFleetWise" -v s3_path=$S3_PATH
+    finally:
+      - echo Exiting the build phase, finally.
