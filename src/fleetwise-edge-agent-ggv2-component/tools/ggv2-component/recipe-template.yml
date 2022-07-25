@@ -1,0 +1,91 @@
+# Copyright 2021 Amazon.com, Inc. or its affiliates. All Rights Reserved.
+# SPDX-License-Identifier: LicenseRef-.amazon.com.-AmznSL-1.0
+# Licensed under the Amazon Software License  http://aws.amazon.com/asl/
+---
+RecipeFormatVersion: '2020-01-25'
+ComponentName: '$component_name'
+ComponentVersion: '$component_version_number'
+ComponentDescription: AWS IoT FleetWis
+ComponentPublisher: Amazon Web Services, Inc.
+ComponentConfiguration:
+  DefaultConfiguration:
+    accessControl:
+      aws.greengrass.ipc.mqttproxy:
+        "$component_name:pub:0":
+          policyDescription: Allows access to publish to IoT Core topic(s).
+          operations:
+            - aws.greengrass#PublishToIoTCore
+            - aws.greengrass#SubscribeToIoTCore
+          resources:
+            - "*"
+    fleetwise:
+      version: '1.0'
+      networkInterfaces:
+        - canInterface:
+            interfaceName: can0
+            protocolName: CAN
+            protocolVersion: 2.0A
+          interfaceId: '1'
+          type: canInterface
+        - obdInterface:
+            interfaceName: can0
+            requestMessageId: 2015
+            obdStandard: J1979
+            useExtendedIds: false
+            hasTransmissionEcu: true
+            pidRequestIntervalSeconds: 0
+            dtcRequestIntervalSeconds: 0
+          interfaceId: '2'
+          type: obdInterface
+      staticConfig:
+        bufferSizes:
+          dtcBufferSize: 100
+          socketCANBufferSize: 10000
+          decodedSignalsBufferSize: 10000
+          rawCANFrameBufferSize: 10000
+        threadIdleTimes:
+          inspectionThreadIdleTimeMs: 50
+          socketCANThreadIdleTimeMs: 50
+          canDecoderThreadIdleTimeMs: 50
+        persistency:
+          persistencyPath: /tmp/fleetwise
+          persistencyPartitionMaxSize: 524288
+          persistencyUploadRetryInterval: 10000
+        internalParameters:
+          readyToPublishDataBufferSize: 10000
+          systemWideLogLevel: Trace
+          dataReductionProbabilityDisabled: false
+        publishToCloudParameters:
+          maxPublishMessageCount: 1000
+          collectionSchemeManagementCheckinIntervalMs: 5000
+        mqttConnection:
+          endpointUrl: ""
+          clientId: CLIENT_ID
+          collectionSchemeListTopic: $aws/iotfleetwise/vehicles/CLIENT_ID/collection_schemes
+          decoderManifestTopic: $aws/iotfleetwise/vehicles/CLIENT_ID/decoder_manifests
+          canDataTopic: $aws/iotfleetwise/vehicles/CLIENT_ID/signals
+          checkinTopic: $aws/iotfleetwise/vehicles/CLIENT_ID/checkins
+          certificateFilename: ""
+          privateKeyFilename: """
+
+Manifests:
+  - Platform:
+      os: linux
+    Lifecycle:
+      Install:
+        RequiresPrivilege: true
+        Timeout: 300
+        Script: |-
+          rm -rf *
+          cp -r {artifacts:decompressedPath}/$component_name/artifacts/* .
+          chmod +x ./aws-iot-fleetwise-edge
+      Run:
+        SetEnv:
+          Config: "{configuration:/fleetwise}"
+        RequiresPrivilege: true
+        Script: |-
+          echo $Config > config.json
+          ./aws-iot-fleetwise-edge ./config.json
+    Artifacts:
+      - URI: $s3_path/$component_name/$component_version_number/$artifacts_zip_file_name.zip
+        Unarchive: ZIP
