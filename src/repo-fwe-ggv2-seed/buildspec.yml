@@ -13,7 +13,9 @@ phases:
       - echo Entered the install phase...
       - curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -
       - apt update && apt install -y git htop jq unzip
+      - git init
       - git submodule update --init --recursive
+      - chmod +x ./tools/install-deps-cross.sh
       - ./tools/install-deps-cross.sh
     finally:
       - echo Exiting the install phase.
