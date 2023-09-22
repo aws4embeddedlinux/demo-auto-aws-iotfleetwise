@@ -20,29 +20,6 @@ class FweGgv2PipelineStack(Stack):
     def __init__(self, scope: Construct, construct_id: str, **kwargs) -> None:
         super().__init__(scope, construct_id, **kwargs)
 
-        # # Token exchange role name used by Greengrass (specified during GG setup)
-        # token_exchange_role_name = "role/GreengrassV2TokenExchangeRole"
-
-        # # Greengrass role (change the role name if you need)
-        # greengrass_token_exchange_role = iam.Role.from_role_arn(
-        #     self, 'greengrassRole',
-        #     "arn:aws:iam::{}:{}".format(self.account, token_exchange_role_name),
-        #     mutable=True
-        # )
-
-        # # Allow greengrass to use AWS Cloudwatch logs.
-        # greengrass_token_exchange_role.add_to_principal_policy(iam.PolicyStatement(
-        #     effect=iam.Effect.ALLOW,
-        #     resources=['*'],
-        #     sid="CloudwatchGGv2Component",
-        #     actions=[
-        #         "logs:CreateLogGroup",
-        #         "logs:CreateLogStream",
-        #         "logs:PutLogEvents",
-        #         "logs:DescribeLogStreams"
-        #     ])
-        # )
-
         # CodeCommit repository is created for component listed here example for
         repository_name = 'fwe-ggv2-component'
         branch = 'main'
@@ -50,7 +27,7 @@ class FweGgv2PipelineStack(Stack):
         # Workaround for https://github.com/aws/aws-cdk/issues/19012        
         repo_asset = assets.Asset(
             self, "RepositoryCodeAsset",
-            path=os.path.join('./src/', 'repo-fwe-ggv2-seed'),
+            path=os.path.join('./greengrass_components/', 'repo-fwe-ggv2-seed'),
             bundling=BundlingOptions(
                 image=DockerImage.from_registry(
                     image="public.ecr.aws/docker/library/alpine:latest"

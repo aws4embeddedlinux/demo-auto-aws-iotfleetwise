@@ -1,1 +1,0 @@
-{"id":1,"uid":"d2xbXi37z","orgId":1,"name":"Amazon Timestream","type":"grafana-timestream-datasource","typeName":"Amazon Timestream","typeLogoUrl":"public/plugins/grafana-timestream-datasource/img/timestream.svg","access":"proxy","url":"","user":"","database":"","basicAuth":false,"isDefault":true,"jsonData":{"authType":"default","defaultMeasure":""},"readOnly":false}

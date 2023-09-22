@@ -104,7 +104,7 @@ class Grafana(Construct):
 
         # Our Grafana image
         image = ecr_assets.DockerImageAsset(self, "GrafanaImage",
-                                            directory='src/grafana-image')
+                                            directory='grafana_dashboards/grafana-image')
         # Web Container
         container_web = task_definition.add_container(
             "web",

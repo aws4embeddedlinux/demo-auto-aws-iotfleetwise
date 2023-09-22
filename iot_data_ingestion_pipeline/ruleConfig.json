@@ -1,0 +1,26 @@
+[
+    {"ruleId": "MyCfnTopicRule-visibility_CANData",
+    "datafields": ["CANBaselineStats"], 
+    "topic": "'dt/+/embedded-metrics/+/can'",
+    "sqlVersion": "2015-10-08",
+    "ruleName": "CANData_to_Timestream"
+    },
+    {"ruleId": "MyCfnTopicRule-visibility_FreeRtosOS",
+    "datafields": ["Latency"], 
+    "topic": "'dt/+/embedded-metrics/+/rtos-os'",
+    "sqlVersion": "2016-03-23",
+    "ruleName": "FreeRTOSOS_to_Timestream"
+    },
+    {"ruleId": "MyCfnTopicRule-visibility_FreeRtosApp",
+    "datafields": ["TaskRuntimeStats", "TaskCurrentStatus", "ProcessingStats"], 
+    "topic": "'dt/+/embedded-metrics/+/rtos-app'",
+    "sqlVersion": "2016-03-23",
+    "ruleName": "FreeRTOSApp_to_Timestream"
+    },
+    {"ruleId": "MyCfnTopicRule-visibility_gg_processing",
+    "datafields": ["IPCProcessingStats", "MailboxProcessingStats" ], 
+    "topic": "'dt/+/embedded-metrics/+/gg-processing'",
+    "sqlVersion": "2016-03-23",
+    "ruleName": "ggProcessing_to_Timestream"
+    }
+]
