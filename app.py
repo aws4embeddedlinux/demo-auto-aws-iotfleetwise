@@ -9,6 +9,7 @@ MainStack(app, "biga-aws-iotfleetwise",
           env=cdk.Environment(
             account=os.getenv('CDK_DEFAULT_ACCOUNT'),
             region=os.getenv('CDK_DEFAULT_REGION')))
+#TODO AD: add GG stack later, together with GG components.
 
 VisibilityStack(app, "VisibilityStack",
 
