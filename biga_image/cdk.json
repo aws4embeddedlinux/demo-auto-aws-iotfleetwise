@@ -1,0 +1,51 @@
+{
+  "app": "npx ts-node --prefer-ts-exts bin/poky-pipeline.ts",
+  "poky-pipeline": "npx ts-node --prefer-ts-exts bin/poky-pipeline.ts",
+  "watch": {
+    "include": ["**"],
+    "exclude": [
+      "README.md",
+      "cdk*.json",
+      "**/*.d.ts",
+      "**/*.js",
+      "tsconfig.json",
+      "package*.json",
+      "yarn.lock",
+      "node_modules",
+      "test"
+    ]
+  },
+  "context": {
+    "@aws-cdk-lib/aws-lambda:recognizeLayerVersion": true,
+    "@aws-cdk-lib/core:checkSecretUsage": true,
+    "@aws-cdk-lib/core:target-partitions": ["aws", "aws-cn"],
+    "@aws-cdk-lib-containers/ecs-service-extensions:enableDefaultLogDriver": true,
+    "@aws-cdk-lib/aws-ec2:uniqueImdsv2TemplateName": true,
+    "@aws-cdk-lib/aws-ecs:arnFormatIncludesClusterName": true,
+    "@aws-cdk-lib/aws-iam:minimizePolicies": true,
+    "@aws-cdk-lib/core:validateSnapshotRemovalPolicy": true,
+    "@aws-cdk-lib/aws-codepipeline:crossAccountKeyAliasStackSafeResourceName": true,
+    "@aws-cdk-lib/aws-s3:createDefaultLoggingPolicy": true,
+    "@aws-cdk-lib/aws-sns-subscriptions:restrictSqsDescryption": true,
+    "@aws-cdk-lib/aws-apigateway:disableCloudWatchRole": true,
+    "@aws-cdk-lib/core:enablePartitionLiterals": true,
+    "@aws-cdk-lib/aws-events:eventsTargetQueueSameAccount": true,
+    "@aws-cdk-lib/aws-iam:standardizedServicePrincipals": true,
+    "@aws-cdk-lib/aws-ecs:disableExplicitDeploymentControllerForCircuitBreaker": true,
+    "@aws-cdk-lib/aws-iam:importedRoleStackSafeDefaultPolicyName": true,
+    "@aws-cdk-lib/aws-s3:serverAccessLogsUseBucketPolicy": true,
+    "@aws-cdk-lib/aws-route53-patters:useCertificate": true,
+    "@aws-cdk-lib/customresources:installLatestAwsSdkDefault": false,
+    "@aws-cdk-lib/aws-rds:databaseProxyUniqueResourceName": true,
+    "@aws-cdk-lib/aws-codedeploy:removeAlarmsFromDeploymentGroup": true,
+    "@aws-cdk-lib/aws-apigateway:authorizerChangeDeploymentLogicalId": true,
+    "@aws-cdk-lib/aws-ec2:launchTemplateDefaultUserData": true,
+    "@aws-cdk-lib/aws-secretsmanager:useAttachedSecretResourcePolicyForSecretTargetAttachments": true,
+    "@aws-cdk-lib/aws-redshift:columnId": true,
+    "@aws-cdk-lib/aws-stepfunctions-tasks:enableEmrServicePolicyV2": true,
+    "@aws-cdk-lib/aws-ec2:restrictDefaultSecurityGroup": true,
+    "@aws-cdk-lib/aws-apigateway:requestValidatorUniqueId": true,
+    "@aws-cdk-lib/aws-kms:aliasNameRef": true,
+    "@aws-cdk-lib/core:includePrefixInUniqueNameGeneration": true
+  }
+}
