@@ -1,0 +1,46 @@
+version: 0.2
+run-as: yoctouser
+
+env:
+  shell: bash
+
+phases:
+  pre_build:
+    run-as: root
+    commands:
+      - chown -R yoctouser /sstate-cache
+      - chown -R yoctouser /downloads
+      - chmod 755 /sstate-cache
+      - chmod 755 /downloads
+      - apt install -y cmake gcc-arm-none-eabi
+  build:
+    commands:
+      - cd S32ComponentFirmware
+      - cmake -G"Unix Makefiles" -S rtosPROD -B build -DCMAKE_TOOLCHAIN_FILE:PATH="$(pwd)/toolchain.cmake"
+      - cmake --build build --verbose
+      - pwd
+      - cd ..
+      - git clone https://github.com/aws4embeddedlinux/meta-aws-demos
+      - cd meta-aws-demos
+      - md5sum ../S32ComponentFirmware/build/firmware.bin
+      - cp ../S32ComponentFirmware/build/firmware.bin meta-aws-demos/recipes-core/images/aws-biga-image/install-rtos-image/rtosPROD.bin
+      - git submodule update --init --recursive
+      - . ./init-build-env $TMP_DIR
+      - echo build started at `date`
+      - BUILD_DEVICE=agl-nxp-goldbox bitbake aws-biga-image
+      - BUILD_DEVICE=agl-nxp-goldbox bitbake aws-biga-image -c populate_sdk
+      - echo build finished at `date`
+      - wic cp $TMP_DIR/tmp/deploy/images/s32g274ardb2/aws-biga-image-s32g274ardb2.sdcard:1/rtos.image   /tmp
+      - md5sum /tmp/rtos.image
+  post_build:
+    commands:
+      # Prune old files in our EFS Mounts, that are not accessed by this or any build within 30 days
+      - find /sstate-cache -atime +30 -delete
+      - find /downloads -atime +30 -delete
+
+artifacts:
+  discard-paths: true
+  files:
+    - $TMP_DIR/tmp/deploy/images/s32g274ardb2/*
+    - $TMP_DIR/tmp/deploy/sdk/*
+
